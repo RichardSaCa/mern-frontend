@@ -43,7 +43,7 @@ jobs:
         id: docker_meta
         uses: docker/metadata-action@v5.0.0
         with:
-          images: ghcr.io/${{github.repository}}-${{ env.TAG }}
+          images: ghcr.io/${{github.repository}}
 
         #logear a GitHub Container Registry
       - name: Login to GHCR
@@ -60,5 +60,5 @@ jobs:
           DOCKER_BUILDKIT: 1
         with:
           push: true
-          tags: ${{ steps.docker_meta.outputs.tags }}-${{ env.TAG }}
+          tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
