@@ -7,7 +7,9 @@ export default defineConfig({
   server: {
     proxy:{
       "/api":{
-        target: 'https://mern-backend-umum.onrender.com'
+        target: 'https://mern-backend-umum.onrender.com',
+        changeOrigin: true,
+        secure: false, // Ignora errores de certificados en SSL
       }
     }
   }
