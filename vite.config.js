@@ -9,7 +9,7 @@ export default defineConfig({
       "/api":{
         target: 'https://mern-backend-umum.onrender.com',
         changeOrigin: true,
-        secure: false, // Ignora errores de certificados en SSL
+        //secure: false, // Ignora errores de certificados en SSL
       }
     }
   }
