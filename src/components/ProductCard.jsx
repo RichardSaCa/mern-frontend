@@ -1,4 +1,4 @@
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
@@ -22,12 +22,29 @@ import {
 } from "@chakra-ui/react";
 import { useProductStore } from "../store/product";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../utils/authContext";
+import { jwtDecode } from "jwt-decode";
+import Cart from "./Cart";
 
 const ProductCard = ({ product }) => {
 	const [updatedProduct, setUpdatedProduct] = useState(product);
+    const { token  } = useAuth();
+	let decoded = null;
+    if(token){ decoded = jwtDecode(token);}
 
 	const textColor = useColorModeValue("gray.600", "gray.200");
 	const bg = useColorModeValue("white", "gray.800");
+
+	//handle cart
+    const [cart, setCart] = useState([]);
+
+	const addToCart = (product1) => {
+		console.log("product ",product1);
+		setCart([...cart, product1]);
+	};
+		
+	
 
 	const { deleteProduct, updateProduct } = useProductStore();
 	const toast = useToast();
@@ -56,6 +73,7 @@ const ProductCard = ({ product }) => {
 
 	const handleUpdateProduct = async (pid, updatedProduct) => {
 		const { success, message } = await updateProduct(pid, updatedProduct);
+		
 		onClose();
 		if (!success) {
 			toast({
@@ -77,6 +95,7 @@ const ProductCard = ({ product }) => {
 	};
 
 	return (
+		
 		<Box
 			shadow='lg'
 			rounded='lg'
@@ -85,7 +104,14 @@ const ProductCard = ({ product }) => {
 			_hover={{ transform: "translateY(-5px)", shadow: "xl" }}
 			bg={bg}
 		>
-			<Image src={product.image} alt={product.name} h={48} w='full' objectFit='cover' />
+			<Cart cart={cart}/>
+			<Link to="/productDetail"
+				state={{ product }}
+				
+			>
+				<Image src={product.image} alt={product.name} h={48} w='full' objectFit='cover' />
+			</Link>
+				
 
 			<Box p={4}>
 				<Heading as='h3' size='md' mb={2}>
@@ -96,14 +122,24 @@ const ProductCard = ({ product }) => {
 					${product.price}
 				</Text>
 
+				{!token ? (
+               <Button leftIcon={<AddIcon />} onClick={() => addToCart(product)} colorScheme='blue'>Agregar</Button>
+            ):
+                (decoded.role === "ROLE_ADMIN") && 
 				<HStack spacing={2}>
 					<IconButton icon={<EditIcon />} onClick={onOpen} colorScheme='blue' />
 					<IconButton
 						icon={<DeleteIcon />}
-						onClick={() => handleDeleteProduct(product._id)}
+						onClick={() => handleDeleteProduct(product._id, product.image)}
 						colorScheme='red'
 					/>
 				</HStack>
+                
+                    
+            }
+
+			
+					
 			</Box>
 
 			<Modal isOpen={isOpen} onClose={onClose}>
